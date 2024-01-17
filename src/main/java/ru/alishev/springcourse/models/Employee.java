@@ -6,9 +6,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
-public class Person {
+public class Employee {
     private int id;
 
     @NotEmpty(message = "Surname should not be empty")
@@ -37,10 +36,10 @@ public class Person {
     @Size(min = 2, max = 30, message = "Post should be between 2 and 30 characters")
     private String post;
 
-    public Person(){}
+    public Employee(){}
 
 
-    public Person(int id, String surname, String name, String patronymic, int workStart, Timestamp birthDate, String email, String post) {
+    public Employee(int id, String surname, String name, String patronymic, int workStart, Timestamp birthDate, String email, String post) {
         this.id = id;
         this.surname = surname;
         this.name = name;

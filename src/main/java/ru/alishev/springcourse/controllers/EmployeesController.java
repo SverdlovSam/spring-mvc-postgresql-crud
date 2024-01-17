@@ -6,68 +6,68 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.alishev.springcourse.dao.PersonDAO;
-import ru.alishev.springcourse.models.Person;
+import ru.alishev.springcourse.dao.EmployeeDAO;
+import ru.alishev.springcourse.models.Employee;
 
 @Controller
 @RequestMapping("/people")
-public class PeopleController {
+public class EmployeesController {
 
-    private final PersonDAO personDAO;
+    private final EmployeeDAO employeeDAO;
 
     @Autowired
-    public PeopleController(PersonDAO personDAO) {
-        this.personDAO = personDAO;
+    public EmployeesController(EmployeeDAO employeeDAO) {
+        this.employeeDAO = employeeDAO;
     }
 
     @GetMapping()
     public String index(Model model){
         // Получим всех людей из DAO и передадим на отображение в представление
-        model.addAttribute("people", personDAO.index());
+        model.addAttribute("people", employeeDAO.index());
         return "people/index";
     }
 
     @GetMapping("/{id}")
     public String show(@PathVariable("id") int id, Model model){
         // Получим одного человека по его id из DAO и передадим на отображение в представление
-        model.addAttribute("person", personDAO.show(id));
+        model.addAttribute("person", employeeDAO.show(id));
         return "people/show";
     }
 
     @GetMapping("/new")
-    public String newPerson(@ModelAttribute("person") Person person){
-//        model.addAttribute("person", new Person()); - это эквивалентно параметру данного метода
+    public String newPerson(@ModelAttribute("person") Employee employee){
+//        model.addAttribute("person", new Employee()); - это эквивалентно параметру данного метода
         return "people/new";
     }
 
     @PostMapping()
-    public String create(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult){
+    public String create(@ModelAttribute("person") @Valid Employee employee, BindingResult bindingResult){
         if(bindingResult.hasErrors())
             return "people/new";
 
-        personDAO.save(person);
+        employeeDAO.save(employee);
         return "redirect:/people";
     }
 
     @GetMapping("/{id}/edit")
     public String edit(Model model, @PathVariable("id") int id) {
-        model.addAttribute("person", personDAO.show(id));
+        model.addAttribute("person", employeeDAO.show(id));
         return "people/edit";
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult,
+    public String update(@ModelAttribute("person") @Valid Employee employee, BindingResult bindingResult,
                          @PathVariable("id") int id){
         if(bindingResult.hasErrors())
             return "people/edit";
 
-        personDAO.update(id, person);
+        employeeDAO.update(id, employee);
         return "redirect:/people";
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") int id){
-        personDAO.delete(id);
+        employeeDAO.delete(id);
         return "redirect:/people";
     }
 

@@ -5,43 +5,43 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
-import ru.alishev.springcourse.models.Person;
+import ru.alishev.springcourse.models.Employee;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class PersonDAO {
+public class EmployeeDAO {
 
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public PersonDAO(JdbcTemplate jdbcTemplate) {
+    public EmployeeDAO(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<Person> index(){
-        return jdbcTemplate.query("SELECT * FROM Person", new BeanPropertyRowMapper<>(Person.class));
+    public List<Employee> index(){
+        return jdbcTemplate.query("SELECT * FROM Person", new BeanPropertyRowMapper<>(Employee.class));
     }
 
-    public Person show(int id){
+    public Employee show(int id){
         return jdbcTemplate.query("SELECT * FROM Person WHERE id=?", new Object[]{id},
-                        new BeanPropertyRowMapper<>(Person.class)).stream().findAny().orElse(null);
+                        new BeanPropertyRowMapper<>(Employee.class)).stream().findAny().orElse(null);
     }
 
-    public void save(Person person){
+    public void save(Employee employee){
         jdbcTemplate.update("INSERT INTO Person(surname, name, patronymic, work_start, birth_date, email, post) " +
-                        "VALUES(?,?,?,?,?,?,?)",person.getSurname(),
-                person.getName(), person.getPatronymic(), person.getWorkStart(), person.getBirthDate(),
-                person.getEmail(), person.getPost());
+                        "VALUES(?,?,?,?,?,?,?)", employee.getSurname(),
+                employee.getName(), employee.getPatronymic(), employee.getWorkStart(), employee.getBirthDate(),
+                employee.getEmail(), employee.getPost());
     }
 
-    public boolean update(int id, Person updatedPerson){
+    public boolean update(int id, Employee updatedEmployee){
         int rowsUpdated = jdbcTemplate.update("UPDATE Person SET surname=?, name=?, patronymic=?, work_start=?," +
-                        "birth_date=?, email=?, post=? WHERE id=?", updatedPerson.getSurname(),
-                updatedPerson.getName(), updatedPerson.getPatronymic(), updatedPerson.getWorkStart(),
-                updatedPerson.getBirthDate(), updatedPerson.getEmail(), updatedPerson.getPost(), id);
+                        "birth_date=?, email=?, post=? WHERE id=?", updatedEmployee.getSurname(),
+                updatedEmployee.getName(), updatedEmployee.getPatronymic(), updatedEmployee.getWorkStart(),
+                updatedEmployee.getBirthDate(), updatedEmployee.getEmail(), updatedEmployee.getPost(), id);
         return rowsUpdated > 0;
     }
 
@@ -55,14 +55,14 @@ public class PersonDAO {
     //////////////////////////
 
     public void testMultipleUpdate(){
-        List<Person> people = create1000People();
+        List<Employee> people = create1000People();
 
         long before = System.currentTimeMillis();
 
-        for(Person person : people) {
-            jdbcTemplate.update("INSERT INTO Person VALUES(?,?,?,?,?,?,?,?)", person.getId(),person.getSurname(),
-                    person.getName(), person.getPatronymic(), person.getWorkStart(), person.getBirthDate(),
-                    person.getEmail(), person.getPost());
+        for(Employee employee : people) {
+            jdbcTemplate.update("INSERT INTO Person VALUES(?,?,?,?,?,?,?,?)", employee.getId(), employee.getSurname(),
+                    employee.getName(), employee.getPatronymic(), employee.getWorkStart(), employee.getBirthDate(),
+                    employee.getEmail(), employee.getPost());
         }
 
         long after = System.currentTimeMillis();
@@ -70,7 +70,7 @@ public class PersonDAO {
     }
 
     public void testBatchUpdate(){
-        List<Person> people = create1000People();
+        List<Employee> people = create1000People();
 
         long before = System.currentTimeMillis();
 
@@ -98,11 +98,11 @@ public class PersonDAO {
         System.out.println("Time: " + (after - before));
     }
 
-    private List<Person> create1000People() {
-        List<Person> people = new ArrayList<>();
+    private List<Employee> create1000People() {
+        List<Employee> people = new ArrayList<>();
 
         for (int i = 0; i < 1000; i++)
-            people.add(new Person(i, "Surname" + i,"Name" + i, "Patronymic" + i, 1990 + i,
+            people.add(new Employee(i, "Surname" + i,"Name" + i, "Patronymic" + i, 1990 + i,
                     new Timestamp(System.currentTimeMillis()), "test" + i + "mail.ru", "test"));
 
         return people;
