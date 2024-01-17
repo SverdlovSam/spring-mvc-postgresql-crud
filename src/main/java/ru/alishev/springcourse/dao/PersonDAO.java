@@ -31,17 +31,23 @@ public class PersonDAO {
     }
 
     public void save(Person person){
-        jdbcTemplate.update("INSERT INTO Person(name, age, email) VALUES(?,?,?)",person.getName(),person.getAge(),
-                person.getEmail());
+        jdbcTemplate.update("INSERT INTO Person(surname, name, patronymic, work_start, birth_date, email, post) " +
+                        "VALUES(?,?,?,?,?,?,?)",person.getSurname(),
+                person.getName(), person.getPatronymic(), person.getWorkStart(), person.getBirthDate(),
+                person.getEmail(), person.getPost());
     }
 
-    public void update(int id, Person updatedPerson){
-        jdbcTemplate.update("UPDATE Person SET name=?, age=?, email=? WHERE id=?", updatedPerson.getName(),
-                updatedPerson.getAge(), updatedPerson.getEmail(), id);
+    public boolean update(int id, Person updatedPerson){
+        int rowsUpdated = jdbcTemplate.update("UPDATE Person SET surname=?, name=?, patronymic=?, work_start=?," +
+                        "birth_date=?, email=?, post=? WHERE id=?", updatedPerson.getSurname(),
+                updatedPerson.getName(), updatedPerson.getPatronymic(), updatedPerson.getWorkStart(),
+                updatedPerson.getBirthDate(), updatedPerson.getEmail(), updatedPerson.getPost(), id);
+        return rowsUpdated > 0;
     }
 
-    public void delete(int id){
-        jdbcTemplate.update("DELETE FROM Person WHERE id=?", id);
+    public boolean delete(int id){
+        int rowsDeleted = jdbcTemplate.update("DELETE FROM Person WHERE id=?", id);
+        return rowsDeleted > 0;
     }
 
     ///////////////////////////
@@ -54,8 +60,9 @@ public class PersonDAO {
         long before = System.currentTimeMillis();
 
         for(Person person : people) {
-            jdbcTemplate.update("INSERT INTO Person VALUES(?,?,?,?)", person.getId(),person.getName(),person.getAge(),
-                    person.getEmail());
+            jdbcTemplate.update("INSERT INTO Person VALUES(?,?,?,?,?,?,?,?)", person.getId(),person.getSurname(),
+                    person.getName(), person.getPatronymic(), person.getWorkStart(), person.getBirthDate(),
+                    person.getEmail(), person.getPost());
         }
 
         long after = System.currentTimeMillis();
@@ -72,9 +79,13 @@ public class PersonDAO {
                     @Override
                     public void setValues(PreparedStatement preparedStatement, int i) throws SQLException {
                         preparedStatement.setInt(1, people.get(i).getId());
-                        preparedStatement.setString(2, people.get(i).getName());
-                        preparedStatement.setInt(3, people.get(i).getAge());
-                        preparedStatement.setString(4, people.get(i).getEmail());
+                        preparedStatement.setString(2,people.get(i).getSurname());
+                        preparedStatement.setString(3, people.get(i).getName());
+                        preparedStatement.setString(4,people.get(i).getPatronymic());
+                        preparedStatement.setInt(5, people.get(i).getWorkStart());
+                        preparedStatement.setTimestamp(6, people.get(i).getBirthDate());
+                        preparedStatement.setString(7, people.get(i).getEmail());
+                        preparedStatement.setString(8, people.get(i).getPost());
                     }
 
                     @Override
@@ -91,7 +102,8 @@ public class PersonDAO {
         List<Person> people = new ArrayList<>();
 
         for (int i = 0; i < 1000; i++)
-            people.add(new Person(i, "Name" + i, 30, "test" + i + "mail.ru"));
+            people.add(new Person(i, "Surname" + i,"Name" + i, "Patronymic" + i, 1990 + i,
+                    new Timestamp(System.currentTimeMillis()), "test" + i + "mail.ru", "test"));
 
         return people;
     }

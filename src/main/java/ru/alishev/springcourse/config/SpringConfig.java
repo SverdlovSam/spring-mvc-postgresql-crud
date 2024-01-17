@@ -7,16 +7,16 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.*;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring6.view.ThymeleafViewResolver;
 
 import javax.sql.DataSource;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 @Configuration
@@ -50,10 +50,22 @@ public class SpringConfig implements WebMvcConfigurer {
     }
 
     @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/");  // Изменено здесь
+    }
+
+    @Override
     public void configureViewResolvers(ViewResolverRegistry registry){
         ThymeleafViewResolver resolver = new ThymeleafViewResolver();
         resolver.setTemplateEngine(templateEngine());
         registry.viewResolver(resolver);
+    }
+
+    @Override
+    public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+        configurer.defaultContentType(MediaType.TEXT_HTML)
+                .mediaType("html", new MediaType("text", "html", StandardCharsets.UTF_8));
     }
 
     @Bean
